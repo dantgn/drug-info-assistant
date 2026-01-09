@@ -1,5 +1,6 @@
 import requests
 
+PUBCHEM_BASE_URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
 
 def extract_properties(compound_data):
     
@@ -19,9 +20,12 @@ def extract_properties(compound_data):
 
     return properties
 
-def get_drug_info_from_pubchem(name: str):
+def fetch_drug_info(name: str):
+    """ 
+    Fetches relevant drug properties for a given drug name from PubChem.
+    """
     # Query PubChem API for drug information
-    url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/json"
+    url = f"{PUBCHEM_BASE_URL}/compound/name/{name}/json"
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -45,3 +49,20 @@ def get_drug_info_from_pubchem(name: str):
         }
     else:
         return {"error": "Drug not found or API error"}
+    
+
+def fetch_similar_compounds(cid: str):
+    """ 
+    Fetches similar compounds for a given CID from PubChem.
+    """
+
+    url = f"{PUBCHEM_BASE_URL}/compound/fastsimilarity_2d/cid/{cid}/cids/json"
+    
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        similar_compound_cids = data.get("IdentifierList", {}).get("CID", [])
+        return { "cids": similar_compound_cids }
+    else:
+        return {"error": "Something went wrong"}
