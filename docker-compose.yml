@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"       # Map port 8000 from the container to port 8000 on the host
+    volumes:
+      - .:/app            # Mount the current directory to /app in the container (useful for development)
+    environment:
+      - ENV_VAR_NAME=value
+    restart: unless-stopped  # Restart container unless manually stopped
